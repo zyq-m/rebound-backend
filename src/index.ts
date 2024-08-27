@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes";
 import itemRoutes from "./routes/itemRoutes";
 import cartRoutes from "./routes/cartRoutes";
+import favouriteRoutes from "./routes/favouriteRoutes";
 
 dotenv.config();
 
@@ -24,4 +25,4 @@ app.listen(port, () => {
 app.use("/auth", authRoutes);
 app.use("/item", itemRoutes);
 app.use("/cart", cartRoutes);
-// app.use("/favourite");
+app.use("/favourite", favouriteRoutes);
