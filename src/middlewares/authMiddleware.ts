@@ -26,6 +26,10 @@ const authMiddleware = (
   }
 
   req.user = decoded;
+
+  if (!req.user.email) {
+    return res.status(405).send({ message: "Email not found" });
+  }
   next();
 };
 
