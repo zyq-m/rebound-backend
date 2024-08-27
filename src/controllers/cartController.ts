@@ -6,7 +6,7 @@ const myCart: RequestHandler = async (req: UserRequest, res) => {
   const email = req.user?.email ?? "";
 
   try {
-    const [carts, count] = await Promise.all([
+    const [cart, count] = await Promise.all([
       prisma.cart.findMany({
         where: {
           email: email,
@@ -22,10 +22,10 @@ const myCart: RequestHandler = async (req: UserRequest, res) => {
       }),
     ]);
 
-    if (!carts.length)
+    if (!cart.length)
       return res.status(404).send({ message: "Your cart is empty" });
 
-    return res.status(200).send({ carts, total: count._count.id ?? 0 });
+    return res.status(200).send({ cart: cart, total: count._count.id ?? 0 });
   } catch (error) {
     return res.sendStatus(500);
   }

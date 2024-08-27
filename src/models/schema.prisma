@@ -51,12 +51,11 @@ model Cart {
 }
 
 model Favourite {
-    id       Int    @id @default(autoincrement())
-    item_id  Int
-    item     Item   @relation(fields: [item_id], references: [id])
-    quantity Int
-    email    String
-    user     User   @relation(fields: [email], references: [email])
+    id      Int    @id @default(autoincrement())
+    item_id Int
+    item    Item   @relation(fields: [item_id], references: [id])
+    email   String
+    user    User   @relation(fields: [email], references: [email])
 
     @@map("favourites")
 }
