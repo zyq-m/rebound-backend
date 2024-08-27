@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "rebound-backend",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -8,9 +8,9 @@
     "dev": "nodemon src/index.ts"
   },
   "keywords": [],
-  "author": "",
+  "author": "Haziq Musa",
   "license": "ISC",
-  "description": "",
+  "description": "Rebound server",
   "prisma": {
     "schema": "./src/models/schema.prisma"
   },
