@@ -15,7 +15,7 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
-  res.send({ test: "Express" });
+  res.send({ message: "Rebound" });
 });
 
 app.listen(port, () => {
