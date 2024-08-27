@@ -12,6 +12,7 @@ model User {
     username      String      @unique
     password      String      @db.Text
     name          String?
+    phone         String?     @db.VarChar(12)
     role          Role        @default(USER)
     items         Item[]
     my_carts      Cart[]
