@@ -8,12 +8,14 @@ generator client {
 }
 
 model User {
-    email    String  @id
-    username String  @unique
-    password String  @db.Text
-    name     String?
-    role     Role    @default(USER)
-    Item     Item[]
+    email         String      @id
+    username      String      @unique
+    password      String      @db.Text
+    name          String?
+    role          Role        @default(USER)
+    items         Item[]
+    my_carts      Cart[]
+    my_favourites Favourite[]
 
     @@map("users")
 }
@@ -31,26 +33,30 @@ model Item {
     description String?     @db.Text
     timestamp   DateTime    @default(now())
     available   Boolean     @default(true)
-    Cart        Cart[]
-    Favourite   Favourite[]
+    cart        Cart[]
+    favourite   Favourite[]
 
     @@map("items")
 }
 
 model Cart {
-    id       Int  @id @default(autoincrement())
+    id       Int    @id @default(autoincrement())
     item_id  Int
-    item     Item @relation(fields: [item_id], references: [id])
+    item     Item   @relation(fields: [item_id], references: [id])
     quantity Int
+    email    String
+    user     User   @relation(fields: [email], references: [email])
 
     @@map("carts")
 }
 
 model Favourite {
-    id       Int  @id @default(autoincrement())
+    id       Int    @id @default(autoincrement())
     item_id  Int
-    item     Item @relation(fields: [item_id], references: [id])
+    item     Item   @relation(fields: [item_id], references: [id])
     quantity Int
+    email    String
+    user     User   @relation(fields: [email], references: [email])
 
     @@map("favourites")
 }
