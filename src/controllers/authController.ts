@@ -4,6 +4,12 @@ import prisma from "../services/client";
 import { check, hash } from "../utils/password";
 import { createAccessToken, createRefreshToken } from "../utils/jwt";
 import { UserRequest } from "../middlewares/authMiddleware";
+import { JwtPayload } from "jsonwebtoken";
+
+export interface UserPayload extends JwtPayload {
+  email?: string | null;
+  name?: string | null;
+}
 
 const login: RequestHandler = async (req, res) => {
   const { email, password } = req.body;
@@ -19,7 +25,7 @@ const login: RequestHandler = async (req, res) => {
   if (!check(password, user?.password))
     return res.status(400).send({ message: "Incorrect password" });
 
-  const payload = {
+  const payload: UserPayload = {
     email: user?.email,
     name: user?.name,
   };
@@ -51,7 +57,6 @@ const signUp: RequestHandler = async (req, res) => {
 
 const logout: RequestHandler = (req: UserRequest, res) => {
   req.user = undefined;
-
   res.status(200).send({ message: "Logged out" });
 };
 

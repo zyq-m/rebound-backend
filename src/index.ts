@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 
 // routes
 import authRoutes from "./routes/authRoutes";
+import itemRoutes from "./routes/itemRoutes";
+import cartRoutes from "./routes/cartRoutes";
 
 dotenv.config();
 
@@ -20,6 +22,6 @@ app.listen(port, () => {
 });
 
 app.use("/auth", authRoutes);
-// app.use("/item");
-// app.use("/cart");
+app.use("/item", itemRoutes);
+app.use("/cart", cartRoutes);
 // app.use("/favourite");

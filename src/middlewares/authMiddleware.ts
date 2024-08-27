@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyAccessToken } from "../utils/jwt";
+import { UserPayload } from "../controllers/authController";
 
 export interface UserRequest extends Request {
-  user?: string | object;
+  user?: UserPayload;
 }
 
 const authMiddleware = (
