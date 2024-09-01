@@ -36,7 +36,7 @@ const login: RequestHandler = async (req, res) => {
   res.status(200).send({ accessToken, refreshToken });
 };
 
-const signUp: RequestHandler = async (req, res) => {
+const signUp: RequestHandler = async (req, res, next) => {
   const { email, password, name, username } = req.body;
 
   try {
@@ -51,7 +51,7 @@ const signUp: RequestHandler = async (req, res) => {
 
     return res.status(201).send({ email: user.email });
   } catch (error) {
-    return res.status(500).send(error);
+    next(error);
   }
 };
 

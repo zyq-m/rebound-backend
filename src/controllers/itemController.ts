@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import prisma from "../services/client";
 import { UserRequest } from "../middlewares/authMiddleware";
 
-const getItems: RequestHandler = async (req, res) => {
+const getItems: RequestHandler = async (req, res, next) => {
   //TODO: do search query params
   const items = await prisma.item.findMany({
     // TODO: cursor based pagination
@@ -29,7 +29,7 @@ const getItems: RequestHandler = async (req, res) => {
   return res.status(200).send(items);
 };
 
-const myItems: RequestHandler = async (req: UserRequest, res) => {
+const myItems: RequestHandler = async (req: UserRequest, res, next) => {
   const email = req.user?.email;
 
   if (!email) return res.status(400).send({ message: "Email not provided" });
@@ -48,11 +48,11 @@ const myItems: RequestHandler = async (req: UserRequest, res) => {
 
     return res.status(200).send(items);
   } catch (error) {
-    return res.sendStatus(500);
+    next(error);
   }
 };
 
-const getItem: RequestHandler = async (req, res) => {
+const getItem: RequestHandler = async (req, res, next) => {
   const itemId = req.params?.id;
 
   if (!itemId) return res.status(400).send({ message: "No id provided" });
@@ -76,7 +76,7 @@ const getItem: RequestHandler = async (req, res) => {
 
     return res.status(200).send(item);
   } catch (error) {
-    return res.sendStatus(500);
+    next(error);
   }
 };
 
@@ -91,7 +91,7 @@ type ItemRequest = {
   expiry?: string | Date;
 };
 
-const addItem: RequestHandler = async (req: UserRequest, res) => {
+const addItem: RequestHandler = async (req: UserRequest, res, next) => {
   const { name, category, location, quantity }: ItemRequest = req.body;
   const email = req.user?.email;
 
@@ -116,11 +116,11 @@ const addItem: RequestHandler = async (req: UserRequest, res) => {
     });
     return res.status(201).send(newItem);
   } catch (error) {
-    return res.sendStatus(500);
+    next(error);
   }
 };
 
-const updateItem: RequestHandler = async (req: UserRequest, res) => {
+const updateItem: RequestHandler = async (req: UserRequest, res, next) => {
   const {
     name,
     category,
@@ -157,7 +157,7 @@ const updateItem: RequestHandler = async (req: UserRequest, res) => {
 
     return res.status(200).send(item);
   } catch (error) {
-    return res.sendStatus(500);
+    next(error);
   }
 };
 

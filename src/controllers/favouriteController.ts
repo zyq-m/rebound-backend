@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import prisma from "../services/client";
 import { UserRequest } from "../middlewares/authMiddleware";
 
-const myFavourite: RequestHandler = async (req: UserRequest, res) => {
+const myFavourite: RequestHandler = async (req: UserRequest, res, next) => {
   const email = req.user?.email ?? "";
 
   try {
@@ -29,11 +29,11 @@ const myFavourite: RequestHandler = async (req: UserRequest, res) => {
       .status(200)
       .send({ favourite: favourite, total: count._count.id ?? 0 });
   } catch (error) {
-    return res.sendStatus(500);
+    next(error);
   }
 };
 
-const addToFav: RequestHandler = async (req: UserRequest, res) => {
+const addToFav: RequestHandler = async (req: UserRequest, res, next) => {
   const email = req.user?.email ?? "";
   const { itemId } = req.body;
 
@@ -49,11 +49,11 @@ const addToFav: RequestHandler = async (req: UserRequest, res) => {
       .status(201)
       .send({ favourite: newFav, message: "Item added to favourite" });
   } catch (error) {
-    return res.sendStatus(500);
+    next(error);
   }
 };
 
-const removeFav: RequestHandler = async (req: UserRequest, res) => {
+const removeFav: RequestHandler = async (req: UserRequest, res, next) => {
   const { id } = req.params;
 
   try {
@@ -67,7 +67,7 @@ const removeFav: RequestHandler = async (req: UserRequest, res) => {
       .status(200)
       .send({ favourite: favourite, message: "Favourite removed" });
   } catch (error) {
-    return res.sendStatus(500);
+    next(error);
   }
 };
 

@@ -9,6 +9,7 @@ import favouriteRoutes from "./routes/favouriteRoutes";
 
 // middlewares
 import authMiddleware from "./middlewares/authMiddleware";
+import errorHandler from "./middlewares/errorHandler";
 
 dotenv.config();
 
@@ -30,3 +31,5 @@ app.use(authMiddleware);
 app.use("/item", itemRoutes);
 app.use("/cart", cartRoutes);
 app.use("/favourite", favouriteRoutes);
+
+app.use(errorHandler);

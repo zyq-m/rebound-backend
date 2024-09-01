@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import prisma from "../services/client";
 import { UserRequest } from "../middlewares/authMiddleware";
 
-const myCart: RequestHandler = async (req: UserRequest, res) => {
+const myCart: RequestHandler = async (req: UserRequest, res, next) => {
   const email = req.user?.email ?? "";
 
   try {
@@ -27,11 +27,11 @@ const myCart: RequestHandler = async (req: UserRequest, res) => {
 
     return res.status(200).send({ cart: cart, total: count._count.id ?? 0 });
   } catch (error) {
-    return res.sendStatus(500);
+    next(error);
   }
 };
 
-const addToCart: RequestHandler = async (req: UserRequest, res) => {
+const addToCart: RequestHandler = async (req: UserRequest, res, next) => {
   const email = req.user?.email ?? "";
   const { itemId, quantity } = req.body;
 
@@ -48,11 +48,11 @@ const addToCart: RequestHandler = async (req: UserRequest, res) => {
       .status(201)
       .send({ cart: newCart, message: "Item added to cart" });
   } catch (error) {
-    return res.sendStatus(500);
+    next(error);
   }
 };
 
-const removeItem: RequestHandler = async (req: UserRequest, res) => {
+const removeItem: RequestHandler = async (req: UserRequest, res, next) => {
   const { id } = req.params;
 
   try {
@@ -64,7 +64,7 @@ const removeItem: RequestHandler = async (req: UserRequest, res) => {
 
     return res.status(200).send({ cart: cart, message: "Cart removed" });
   } catch (error) {
-    return res.sendStatus(500);
+    next(error);
   }
 };
 
