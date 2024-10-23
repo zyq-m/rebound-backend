@@ -27,8 +27,8 @@ model User {
 
 model Item {
     id             Int              @id @default(autoincrement())
-    email          String
     user           User             @relation(fields: [email], references: [email])
+    email          String
     name           String
     category       ItemCategory     @relation(fields: [category_id], references: [id])
     category_id    Int
