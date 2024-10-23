@@ -1,9 +1,8 @@
 import { RequestHandler } from "express";
 import prisma from "../services/client";
-import { UserRequest } from "../middlewares/authMiddleware";
 
-const myFavourite: RequestHandler = async (req: UserRequest, res, next) => {
-  const email = req.user?.email ?? "";
+const myFavourite: RequestHandler = async (req, res, next) => {
+  const email = req.body.user?.email ?? "";
 
   try {
     const [favourite, count] = await Promise.all([
@@ -33,8 +32,8 @@ const myFavourite: RequestHandler = async (req: UserRequest, res, next) => {
   }
 };
 
-const addToFav: RequestHandler = async (req: UserRequest, res, next) => {
-  const email = req.user?.email ?? "";
+const addToFav: RequestHandler = async (req, res, next) => {
+  const email = req.body.user?.email ?? "";
   const { itemId } = req.body;
 
   try {
@@ -53,7 +52,7 @@ const addToFav: RequestHandler = async (req: UserRequest, res, next) => {
   }
 };
 
-const removeFav: RequestHandler = async (req: UserRequest, res, next) => {
+const removeFav: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
 
   try {

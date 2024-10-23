@@ -6,6 +6,6 @@ const route = express.Router();
 route.post("/login", controller.login);
 route.post("/sign-up", controller.signUp);
 route.post("/logout", controller.logout);
-route.put("/change-password", controller.changePassword);
+route.post("/refresh", controller.refresh);
 
 export default route;

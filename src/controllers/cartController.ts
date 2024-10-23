@@ -1,9 +1,8 @@
 import { RequestHandler } from "express";
 import prisma from "../services/client";
-import { UserRequest } from "../middlewares/authMiddleware";
 
-const myCart: RequestHandler = async (req: UserRequest, res, next) => {
-  const email = req.user?.email ?? "";
+const myCart: RequestHandler = async (req, res, next) => {
+  const email = req.body.user?.email ?? "";
 
   try {
     const [cart, count] = await Promise.all([
@@ -31,8 +30,8 @@ const myCart: RequestHandler = async (req: UserRequest, res, next) => {
   }
 };
 
-const addToCart: RequestHandler = async (req: UserRequest, res, next) => {
-  const email = req.user?.email ?? "";
+const addToCart: RequestHandler = async (req, res, next) => {
+  const email = req.body.user?.email ?? "";
   const { itemId, quantity } = req.body;
 
   try {
@@ -52,7 +51,7 @@ const addToCart: RequestHandler = async (req: UserRequest, res, next) => {
   }
 };
 
-const removeItem: RequestHandler = async (req: UserRequest, res, next) => {
+const removeItem: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
 
   try {

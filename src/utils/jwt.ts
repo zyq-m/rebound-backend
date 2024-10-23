@@ -3,9 +3,9 @@ import { JwtPayload, sign, verify } from "jsonwebtoken";
 const accessKey: string = process.env.ACCESS_SECRET || "secret";
 const refreshKey: string = process.env.REFRESH_SECRET || "secret";
 
-const createAccessToken = (payload: JwtPayload) => {
+const createAccessToken = (payload: JwtPayload | string) => {
   return sign(payload, accessKey, {
-    expiresIn: "30m",
+    expiresIn: "2d",
   });
 };
 
@@ -16,19 +16,11 @@ const createRefreshToken = (payload: JwtPayload) => {
 };
 
 const verifyAccessToken = async (token: string) => {
-  try {
-    return verify(token, accessKey);
-  } catch (err) {
-    return null;
-  }
+  return verify(token, accessKey);
 };
 
 const verifyRefreshToken = async (token: string) => {
-  try {
-    return verify(token, refreshKey);
-  } catch (err) {
-    return null;
-  }
+  return verify(token, refreshKey);
 };
 
 export {

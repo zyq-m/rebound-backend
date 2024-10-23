@@ -2,38 +2,45 @@ import { RequestHandler } from "express";
 import prisma from "../services/client";
 
 import { check, hash } from "../utils/password";
-import { createAccessToken, createRefreshToken } from "../utils/jwt";
-import { UserRequest } from "../middlewares/authMiddleware";
+import {
+  createAccessToken,
+  createRefreshToken,
+  verifyRefreshToken,
+} from "../utils/jwt";
 import { JwtPayload } from "jsonwebtoken";
 
-export interface UserPayload extends JwtPayload {
+export type UserPayload = JwtPayload & {
   email?: string | null;
   name?: string | null;
-}
+};
 
-const login: RequestHandler = async (req, res) => {
+const login: RequestHandler = async (req, res, next) => {
   const { email, password } = req.body;
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email,
-    },
-  });
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
 
-  if (!user) return res.status(404).send({ message: "Email not found" });
+    if (!user) return res.status(404).send({ message: "Email not found" });
 
-  if (!check(password, user?.password))
-    return res.status(400).send({ message: "Incorrect password" });
+    if (!check(password, user?.password))
+      return res.status(400).send({ message: "Incorrect password" });
 
-  const payload: UserPayload = {
-    email: user?.email,
-    name: user?.name,
-  };
+    const payload = {
+      email: user.email,
+      name: user.name,
+    };
 
-  const accessToken = createAccessToken(payload);
-  const refreshToken = createRefreshToken(payload);
+    const accessToken = createAccessToken(payload);
+    const refreshToken = createRefreshToken(payload);
 
-  res.status(200).send({ accessToken, refreshToken });
+    res.status(200).send({ accessToken, refreshToken });
+  } catch (error) {
+    next();
+  }
 };
 
 const signUp: RequestHandler = async (req, res, next) => {
@@ -55,49 +62,30 @@ const signUp: RequestHandler = async (req, res, next) => {
   }
 };
 
-const logout: RequestHandler = (req: UserRequest, res) => {
-  req.user = undefined;
+const logout: RequestHandler = (req, res) => {
+  req.body.user = {};
   res.status(200).send({ message: "Logged out" });
 };
 
-const changePassword: RequestHandler = async (req: UserRequest, res, next) => {
-  const { oldPass, newPass, reTypePass } = req.body;
-  const email = req.user?.email;
+const refresh: RequestHandler = async (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const refreshToken: string | undefined =
+    authHeader && authHeader.split(" ")[1];
 
-  if (!email) {
-    return res.status(404).send({ message: "Email not found" });
+  if (!refreshToken) {
+    return res.status(403).send({ message: "No credential provided" });
   }
 
-  if (newPass !== reTypePass)
-    return res
-      .status(400)
-      .send({ message: "New password not match with retype password" });
-
+  // Verify refresh token
   try {
-    const user = await prisma.user.findUnique({
-      where: {
-        email,
-      },
-    });
+    // decode contain information like payload, in token
+    const user = await verifyRefreshToken(refreshToken);
+    const newAccessToken = createAccessToken(user);
 
-    if (!user) return res.status(404).send({ message: "Email not found" });
-
-    if (!check(oldPass, user?.password))
-      return res.status(400).send({ message: "Incorrect password" });
-
-    await prisma.user.update({
-      data: {
-        password: hash(newPass),
-      },
-      where: {
-        email,
-      },
-    });
-
-    return res.status(200).send({ message: "Successfull changed" });
+    return res.status(201).send({ accessToken: newAccessToken });
   } catch (error) {
-    next(error);
+    next();
   }
 };
 
-export default { login, signUp, logout, changePassword };
+export default { login, signUp, logout, refresh };

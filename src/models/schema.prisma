@@ -8,38 +8,54 @@ generator client {
 }
 
 model User {
-    email         String      @id
-    username      String      @unique
-    password      String      @db.Text
-    name          String?
-    phone         String?     @db.VarChar(12)
-    role          Role        @default(USER)
-    timestamp     DateTime    @default(now())
-    location      Json?
-    items         Item[]
-    my_carts      Cart[]
-    my_favourites Favourite[]
+    email          String           @id
+    username       String           @unique
+    password       String           @db.Text
+    name           String?
+    phone          String?          @db.VarChar(12)
+    role           Role             @default(USER)
+    timestamp      DateTime         @default(now())
+    // location      Json?
+    avatar         String?          @db.Text
+    items          Item[]
+    my_carts       Cart[]
+    my_favourites  Favourite[]
+    RequestHistory RequestHistory[]
 
     @@map("users")
 }
 
 model Item {
-    id          Int         @id @default(autoincrement())
-    email       String
-    user        User        @relation(fields: [email], references: [email])
-    name        String
-    category    String
-    quantity    Int
-    condition   String?
-    expiry      DateTime?   @db.Date
-    location    Json
-    description String?     @db.Text
-    timestamp   DateTime    @default(now())
-    available   Boolean     @default(true)
-    cart        Cart[]
-    favourite   Favourite[]
+    id             Int              @id @default(autoincrement())
+    email          String
+    user           User             @relation(fields: [email], references: [email])
+    name           String
+    category       String
+    quantity       Int
+    condition      String?
+    expiry         DateTime?        @db.Date
+    location       Json
+    description    String?          @db.Text
+    timestamp      DateTime         @default(now())
+    available      Boolean          @default(true)
+    images         Json?
+    cart           Cart[]
+    favourite      Favourite[]
+    RequestHistory RequestHistory[]
 
     @@map("items")
+}
+
+model RequestHistory {
+    id        Int     @id @default(autoincrement())
+    item_id   Int
+    item      Item    @relation(fields: [item_id], references: [id])
+    quantity  Int
+    email     String
+    user      User    @relation(fields: [email], references: [email])
+    completed Boolean @default(false)
+
+    @@map("req_history")
 }
 
 model Cart {
