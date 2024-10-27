@@ -3,6 +3,7 @@ import prisma from "../services/client";
 
 const getItems: RequestHandler = async (req, res, next) => {
 	const { name } = req.params;
+	const email = req.body.user?.email;
 	//TODO: do search query params
 	const items = await prisma.item.findMany({
 		// TODO: cursor based pagination
@@ -11,7 +12,6 @@ const getItems: RequestHandler = async (req, res, next) => {
 		// cursor: {
 		//     id: itemCursor
 		// }
-
 		include: {
 			user: {
 				select: {
@@ -27,6 +27,9 @@ const getItems: RequestHandler = async (req, res, next) => {
 				contains: name,
 			},
 			available: true,
+			email: {
+				not: email,
+			},
 		},
 
 		orderBy: {
@@ -257,7 +260,11 @@ const requestItemList: RequestHandler = async (req, res, next) => {
 				completed: "asc",
 			},
 			include: {
-				item: true,
+				item: {
+					include: {
+						category: true,
+					},
+				},
 			},
 		});
 

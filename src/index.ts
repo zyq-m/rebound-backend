@@ -57,7 +57,7 @@ app.listen(port, () => {
 
 app.use("/images", express.static(FOLDER));
 app.use("/auth", authRoutes);
-// app.use(authMiddleware);
+app.use(authMiddleware);
 app.use("/item", itemRoutes);
 app.use("/cart", cartRoutes);
 app.use("/favourite", favouriteRoutes);
