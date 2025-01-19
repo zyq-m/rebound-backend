@@ -1,4 +1,4 @@
-import { genSaltSync, hashSync, compareSync } from "bcryptjs";
+import { genSaltSync, hashSync, compareSync } from 'bcryptjs';
 
 const salt = genSaltSync(10);
 

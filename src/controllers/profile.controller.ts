@@ -1,6 +1,6 @@
-import { RequestHandler } from "express";
-import prisma from "../services/client";
-import { check, hash } from "../utils/password";
+import { RequestHandler } from 'express';
+import prisma from '../services/client';
+import { check, hash } from '../utils/password';
 
 const myProfile: RequestHandler = async (req, res, next) => {
   try {
@@ -19,7 +19,7 @@ const myProfile: RequestHandler = async (req, res, next) => {
       },
     });
 
-    if (!userProfile) return res.status(404).send({ message: "Not found" });
+    if (!userProfile) return res.status(404).send({ message: 'Not found' });
 
     return res.status(200).send(userProfile);
   } catch (error) {
@@ -46,9 +46,9 @@ const editProfile: RequestHandler = async (req, res, next) => {
       },
     });
 
-    if (!editProfile) return res.status(400).send({ message: "Invalid input" });
+    if (!editProfile) return res.status(400).send({ message: 'Invalid input' });
 
-    return res.status(200).send({ message: "Successfully update" });
+    return res.status(200).send({ message: 'Successfully update' });
   } catch (error) {
     next();
   }
@@ -59,13 +59,13 @@ const changePassword: RequestHandler = async (req, res, next) => {
   const email = req.body.user?.email;
 
   if (!email) {
-    return res.status(404).send({ message: "Email not found" });
+    return res.status(404).send({ message: 'Email not found' });
   }
 
   if (newPass !== reTypePass)
     return res
       .status(400)
-      .send({ message: "New password not match with retype password" });
+      .send({ message: 'New password not match with retype password' });
 
   try {
     const user = await prisma.user.findUnique({
@@ -74,10 +74,10 @@ const changePassword: RequestHandler = async (req, res, next) => {
       },
     });
 
-    if (!user) return res.status(404).send({ message: "Email not found" });
+    if (!user) return res.status(404).send({ message: 'Email not found' });
 
     if (!check(oldPass, user?.password))
-      return res.status(400).send({ message: "Incorrect password" });
+      return res.status(400).send({ message: 'Incorrect password' });
 
     await prisma.user.update({
       data: {
@@ -88,7 +88,7 @@ const changePassword: RequestHandler = async (req, res, next) => {
       },
     });
 
-    return res.status(200).send({ message: "Successfull changed" });
+    return res.status(200).send({ message: 'Successfull changed' });
   } catch (error) {
     next(error);
   }

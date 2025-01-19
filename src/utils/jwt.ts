@@ -1,17 +1,17 @@
-import { JwtPayload, sign, verify } from "jsonwebtoken";
+import { JwtPayload, sign, verify } from 'jsonwebtoken';
 
-const accessKey: string = process.env.ACCESS_SECRET || "secret";
-const refreshKey: string = process.env.REFRESH_SECRET || "secret";
+const accessKey: string = process.env.ACCESS_SECRET || 'secret';
+const refreshKey: string = process.env.REFRESH_SECRET || 'secret';
 
 const createAccessToken = (payload: JwtPayload | string) => {
   return sign(payload, accessKey, {
-    expiresIn: "2d",
+    expiresIn: '2d',
   });
 };
 
 const createRefreshToken = (payload: JwtPayload) => {
   return sign(payload, refreshKey, {
-    expiresIn: "30d",
+    expiresIn: '30d',
   });
 };
 
