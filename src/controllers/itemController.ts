@@ -1,40 +1,21 @@
 import { RequestHandler } from "express";
 import prisma from "../services/client";
+import Item from "../models/Item";
+
+const itemModel = new Item();
 
 const getItems: RequestHandler = async (req, res, next) => {
-	const { name } = req.params;
+	const { name, categoryId, take } = req.query as {
+		name: string;
+		categoryId: string;
+		take: string;
+	};
 	const email = req.body.user?.email;
-	//TODO: do search query params
-	const items = await prisma.item.findMany({
-		// TODO: cursor based pagination
-		// take: 5,
-		// skip: skip,
-		// cursor: {
-		//     id: itemCursor
-		// }
-		include: {
-			user: {
-				select: {
-					email: true,
-					name: true,
-					avatar: true,
-				},
-			},
-		},
-
-		where: {
-			name: {
-				contains: name,
-			},
-			available: true,
-			email: {
-				not: email,
-			},
-		},
-
-		orderBy: {
-			timestamp: "desc",
-		},
+	const items = await itemModel.filterItem({
+		name,
+		categoryId: +categoryId,
+		email,
+		take: take ? +take : undefined,
 	});
 
 	if (!items.length)
@@ -145,7 +126,7 @@ const addItem: RequestHandler = async (req, res, next) => {
 				condition: condition,
 				description: description,
 				images: images.map((img) => ({
-					uri: `${process.env.URL_NAME}/images/${img.name}`,
+					uri: `images/${img.name}`,
 				})),
 				email: email,
 			},
@@ -212,8 +193,6 @@ const requestItem: RequestHandler = async (req, res, next) => {
 			user: { email },
 		}: ItemRequested = req.body;
 		const itemId = req.params?.id;
-		console.log(req.params);
-		console.log(req.body);
 
 		const item = await prisma.item.findUnique({
 			where: { id: +itemId, available: true },
@@ -221,29 +200,17 @@ const requestItem: RequestHandler = async (req, res, next) => {
 
 		if (!item) return res.status(404).send({ message: "Item not found" });
 
-		const temp = item.quantity - quantity;
-		const [updateItem, saveHistory] = await Promise.all([
-			prisma.item.update({
-				data: {
-					quantity: temp,
-					available: temp == 0 ? false : true,
-				},
-				where: {
-					id: item.id,
-				},
-			}),
-			prisma.requestHistory.create({
-				data: {
-					quantity,
-					email,
-					item_id: item.id,
-				},
-			}),
-		]);
+		const saveHistory = await prisma.requestHistory.create({
+			data: {
+				quantity,
+				email,
+				item_id: item.id,
+			},
+		});
 
 		return res
 			.status(200)
-			.send({ message: "Item requested", item: updateItem });
+			.send({ message: "Item requested", item: saveHistory });
 	} catch (error) {
 		next();
 	}
