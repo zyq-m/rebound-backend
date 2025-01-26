@@ -10,6 +10,9 @@ const myFavourite: RequestHandler = async (req, res, next) => {
         where: {
           email: email,
         },
+        include: {
+          item: true,
+        },
       }),
       prisma.favourite.aggregate({
         where: {
