@@ -26,7 +26,11 @@ dotenv.config();
 
 const app: Express = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+  },
+});
 const port = process.env.PORT || 3000;
 const isProduction = process.env.NODE_ENV === 'production';
 const originConfig = {
@@ -52,7 +56,7 @@ app.use(bodyParse.json());
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
-app.get('/', (req: Request, res: Response) => {
+app.get('/api', (req: Request, res: Response) => {
   res.send({ message: 'Rebound' });
 });
 
