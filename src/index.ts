@@ -56,16 +56,16 @@ app.get('/', (req: Request, res: Response) => {
   res.send({ message: 'Rebound' });
 });
 
-app.use('/images', express.static(FOLDER));
-app.use('/auth', authRoutes);
+app.use('/api/images', express.static(FOLDER));
+app.use('/api/auth', authRoutes);
 app.use(authMiddleware);
-app.use('/item', itemRoutes);
-app.use('/cart', cartRoutes);
-app.use('/favourite', favouriteRoutes);
-app.use('/profile', profileRoutes);
-app.use('/category', categoryRoutes);
+app.use('/api/item', itemRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/favourite', favouriteRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/category', categoryRoutes);
 
-app.post('/upload', upload.array('images', 5), (req, res) => {
+app.post('/api/upload', upload.array('images', 5), (req, res) => {
   res.status(201).send({ message: 'Uploaded' });
 });
 app.use(errorHandler);
