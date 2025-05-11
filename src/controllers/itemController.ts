@@ -10,6 +10,7 @@ const getItems: RequestHandler = async (req, res, next) => {
     categoryId: string;
     take: string;
   };
+
   const email = req.body.user?.email;
   const items = await itemModel.filterItem({
     name,
@@ -256,13 +257,59 @@ const recievedItem: RequestHandler = async (req, res, next) => {
       },
     });
 
+    if (reqItem) {
+      await prisma.item.update({
+        data: {
+          quantity: {
+            decrement: 1,
+          },
+        },
+        where: {
+          id: reqItem.item_id,
+        },
+      });
+    }
+
     return res.status(200).send({ message: 'Successfull recieved' });
   } catch (error) {
     next();
   }
 };
 
+const requestedUser: RequestHandler = async (req, res, next) => {
+  const itemId = req.params?.id;
+
+  if (!itemId) return res.status(400).send({ message: 'No id provided' });
+
+  try {
+    const item = await prisma.item.findUnique({
+      where: {
+        id: +itemId,
+      },
+      include: {
+        requested_user: {
+          include: {
+            user: {
+              select: {
+                avatar: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!item) return res.status(404).send({ message: 'Item not found' });
+
+    return res.status(200).send(item);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
+  requestedUser,
   getItems,
   myItems,
   getItem,

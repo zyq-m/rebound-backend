@@ -36,12 +36,15 @@ export default class Item {
               }
             : {},
           {
-            available: true,
+            available: false,
             email: {
               not: email,
             },
           },
         ],
+        quantity: {
+          not: 0,
+        },
       },
 
       orderBy: {

@@ -18,10 +18,15 @@ import errorHandler from './middlewares/errorHandler';
 import multer from 'multer';
 import fs from 'node:fs';
 import path from 'path';
+import http from 'http';
+import { Server } from 'socket.io';
+import socketHandler from './websocket';
 
 dotenv.config();
 
 const app: Express = express();
+const server = http.createServer(app);
+const io = new Server(server);
 const port = process.env.PORT || 3000;
 const isProduction = process.env.NODE_ENV === 'production';
 const originConfig = {
@@ -51,10 +56,6 @@ app.get('/', (req: Request, res: Response) => {
   res.send({ message: 'Rebound' });
 });
 
-app.listen(port, () => {
-  console.log(`[server]: Server is running at port ${port}`);
-});
-
 app.use('/images', express.static(FOLDER));
 app.use('/auth', authRoutes);
 app.use(authMiddleware);
@@ -67,5 +68,9 @@ app.use('/category', categoryRoutes);
 app.post('/upload', upload.array('images', 5), (req, res) => {
   res.status(201).send({ message: 'Uploaded' });
 });
-
 app.use(errorHandler);
+
+socketHandler(io);
+server.listen(port, () => {
+  console.log(`[server]: Server is running at port ${port}`);
+});

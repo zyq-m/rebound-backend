@@ -5,6 +5,7 @@ const route = express.Router();
 
 route.get('/', controller.getItems);
 route.get('/my-item', controller.myItems);
+route.get('/my-item/:id', controller.requestedUser);
 route.get('/my-request', controller.requestItemList);
 route.get('/:id', controller.getItem);
 

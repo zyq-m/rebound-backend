@@ -29,17 +29,11 @@ const myProfile: RequestHandler = async (req, res, next) => {
 
 const editProfile: RequestHandler = async (req, res, next) => {
   try {
-    const {
-      name,
-      avatar,
-      username,
-      user: { email },
-    } = req.body;
+    const { name, avatar, email } = req.body;
     const editProfile = await prisma.user.update({
       data: {
-        avatar,
+        avatar: `images/${avatar}`,
         name,
-        username,
       },
       where: {
         email,

@@ -20,7 +20,9 @@ model User {
     items          Item[]
     my_carts       Cart[]
     my_favourites  Favourite[]
-    RequestHistory RequestHistory[]
+    requestHistory RequestHistory[]
+    chats          Chat[]           @relation("chatParticipants")
+    messages       Message[]
 
     @@map("users")
 }
@@ -42,7 +44,7 @@ model Item {
     images         Json?
     cart           Cart[]
     favourite      Favourite[]
-    RequestHistory RequestHistory[]
+    requested_user RequestHistory[]
 
     @@map("items")
 }
@@ -57,13 +59,14 @@ model ItemCategory {
 }
 
 model RequestHistory {
-    id        Int     @id @default(autoincrement())
+    id        Int      @id @default(autoincrement())
     item_id   Int
-    item      Item    @relation(fields: [item_id], references: [id])
+    item      Item     @relation(fields: [item_id], references: [id])
     quantity  Int
     email     String
-    user      User    @relation(fields: [email], references: [email])
-    completed Boolean @default(false)
+    user      User     @relation(fields: [email], references: [email])
+    completed Boolean  @default(false)
+    timestamp DateTime @default(now())
 
     @@map("req_history")
 }
@@ -89,7 +92,53 @@ model Favourite {
     @@map("favourites")
 }
 
+model Chat {
+    id           Int       @id @default(autoincrement())
+    participants User[]    @relation("chatParticipants")
+    createdAt    DateTime  @default(now())
+    messages     Message[]
+
+    @@map("chats")
+}
+
+model Message {
+    id        Int      @id @default(autoincrement())
+    chat      Chat     @relation(fields: [chat_id], references: [id])
+    chat_id   Int
+    user      User     @relation(fields: [userEmail], references: [email])
+    userEmail String
+    text      String?
+    image     String? // Store image URL if any
+    sent      Boolean  @default(true)
+    received  Boolean  @default(false)
+    createdAt DateTime @default(now())
+}
+
 enum Role {
     USER
     ADMIN
 }
+
+// model User {
+//     id       Int       @id @default(autoincrement())
+//     email    String    @unique
+//     name     String?
+//     chats    Chat[]    @relation("ChatParticipants")
+//     messages Message[]
+// }
+
+// model Chat {
+//     id           Int       @id @default(autoincrement())
+//     participants User[]    @relation("ChatParticipants")
+//     messages     Message[]
+// }
+
+// model Message {
+//     id        Int      @id @default(autoincrement())
+//     text      String
+//     chat      Chat     @relation(fields: [chatId], references: [id])
+//     chatId    Int
+//     sender    User     @relation(fields: [senderId], references: [id])
+//     senderId  Int
+//     createdAt DateTime @default(now())
+// }
