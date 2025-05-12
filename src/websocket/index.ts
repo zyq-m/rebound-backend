@@ -3,7 +3,7 @@ import prisma from '../services/client';
 
 const socketHandler = (io: Server) => {
   io.on('connection', (socket) => {
-    // console.log('User connected:', socket.id);
+    console.log('User connected:', socket.id);
 
     socket.on('registerChatNotification', (email) => {
       socket.join(`notification_${email}`);
@@ -35,7 +35,7 @@ const socketHandler = (io: Server) => {
               select: { name: true, avatar: true, email: true },
             },
           },
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: 'asc' },
         });
 
         socket.join(`chat_${existingChat.id}`);

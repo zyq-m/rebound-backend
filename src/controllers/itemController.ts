@@ -121,7 +121,7 @@ const addItem: RequestHandler = async (req, res, next) => {
       data: {
         name: name,
         location: location,
-        category_id: categoryId,
+        category_id: +categoryId,
         quantity: +quantity,
         expiry: expiry,
         condition: condition,
