@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "npx tsc",
+    "build": "git pull origin master && npx tsc && pm2 restart rizkify-api",
     "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts",
+    "dev": " nodemon src/index.ts",
     "seed": "prisma db seed",
     "push-db": "prisma db push",
     "format": "prettier --write .",
