@@ -13,5 +13,6 @@ route.post('/', controller.addItem);
 route.put('/:id', controller.updateItem);
 route.put('/request/:id', controller.recievedItem);
 route.post('/:id', controller.requestItem);
+route.delete('/:id', controller.deleteItem);
 
 export default route;

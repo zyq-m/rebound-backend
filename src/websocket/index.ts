@@ -14,6 +14,11 @@ const socketHandler = (io: Server) => {
     socket.on('joinChat', async (email: string, pEmail: string) => {
       console.log(`${email} join chat`);
       // Find existing chat with both participants
+      if (!email && !pEmail) {
+        socket.emit('chatHistory', []);
+        return;
+      }
+
       const existingChat = await prisma.chat.findFirst({
         where: {
           AND: [

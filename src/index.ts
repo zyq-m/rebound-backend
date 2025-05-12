@@ -67,9 +67,12 @@ app.get('/api', (req: Request, res: Response) => {
   res.send({ message: 'Rebound' });
 });
 
-app.use('/api/images', express.static(FOLDER));
+app.use('/api/images', express.static(FOLDER, { fallthrough: false }));
+
 app.use('/api/auth', authRoutes);
+
 app.use(authMiddleware);
+
 app.use('/api/item', itemRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/favourite', favouriteRoutes);

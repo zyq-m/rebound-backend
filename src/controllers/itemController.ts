@@ -308,6 +308,32 @@ const requestedUser: RequestHandler = async (req, res, next) => {
   }
 };
 
+const deleteItem: RequestHandler = async (req, res, next) => {
+  let itemId: string | number = req.params?.id;
+  itemId = +itemId;
+
+  try {
+    // Delete related records first to maintain referential integrity
+    await prisma.$transaction([
+      prisma.cart.deleteMany({ where: { item_id: itemId } }),
+      prisma.favourite.deleteMany({ where: { item_id: itemId } }),
+      prisma.requestHistory.deleteMany({ where: { item_id: itemId } }),
+    ]);
+
+    // Now delete the item
+    const deletedItem = await prisma.item.delete({
+      where: { id: itemId },
+    });
+
+    return res
+      .status(200)
+      .send({ message: 'Item successfully deleted', item: deletedItem });
+  } catch (error) {
+    console.error('Error deleting item:', error);
+    next(error);
+  }
+};
+
 export default {
   requestedUser,
   getItems,
@@ -318,4 +344,5 @@ export default {
   requestItem,
   requestItemList,
   recievedItem,
+  deleteItem,
 };
