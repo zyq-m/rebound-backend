@@ -56,6 +56,13 @@ app.use(bodyParse.json());
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
+app.use((req, res, next) => {
+  console.log(
+    `[${new Date().toISOString()}] ${req.ip} ${req.method} ${req.originalUrl}`,
+  );
+  next();
+});
+
 app.get('/api', (req: Request, res: Response) => {
   res.send({ message: 'Rebound' });
 });
