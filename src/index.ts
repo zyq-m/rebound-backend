@@ -21,6 +21,7 @@ import path from 'path';
 import http from 'http';
 import { Server } from 'socket.io';
 import socketHandler from './websocket';
+import { hash } from './utils/password';
 
 dotenv.config();
 
@@ -86,5 +87,6 @@ app.use(errorHandler);
 
 socketHandler(io);
 server.listen(port, () => {
+  console.log(hash('admin123'));
   console.log(`[server]: Server is running at port ${port}`);
 });

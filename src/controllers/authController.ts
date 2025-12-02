@@ -44,7 +44,7 @@ const login: RequestHandler = async (req, res, next) => {
 };
 
 const signUp: RequestHandler = async (req, res, next) => {
-  const { email, password, name, username } = req.body;
+  const { email, password, name, phone } = req.body;
 
   try {
     const user = await prisma.user.create({
@@ -52,7 +52,7 @@ const signUp: RequestHandler = async (req, res, next) => {
         email: email,
         password: hash(password),
         name: name,
-        username: username,
+        phone,
       },
     });
 

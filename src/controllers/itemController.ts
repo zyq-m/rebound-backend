@@ -46,6 +46,7 @@ const myItems: RequestHandler = async (req, res, next) => {
             avatar: true,
           },
         },
+        category: true,
       },
     });
 

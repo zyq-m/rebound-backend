@@ -1,0 +1,163 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  phone        String
+  password     String   @db.Text
+  role         UserRole @default(USER)
+  isSuspended  Boolean  @default(false)
+  refreshToken String?  @db.Text
+  location     String?  @db.Text
+  imageUrl     String?  @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  items            Item[]
+  likedItems       LikedItem[]
+  sentChats        ChatMessage[] @relation("SentMessages")
+  receivedChats    ChatMessage[] @relation("ReceivedMessages")
+  sentRequests     ItemRequest[] @relation("SentRequests")
+  receivedRequests ItemRequest[] @relation("ReceivedRequests")
+
+  @@map("users")
+}
+
+model ItemImage {
+  id        String   @id @default(cuid())
+  imageUrl  String
+  itemId    String
+  item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@map("item_images")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  items Item[]
+
+  @@map("categories")
+}
+
+model Condition {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  items Item[]
+
+  @@map("conditions")
+}
+
+model Item {
+  id                  String   @id @default(cuid())
+  name                String
+  quantity            Int      @default(1)
+  expiry              DateTime @db.Date
+  description         String?
+  location            String   @db.Text
+  locationDescription String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId  String
+  category    Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  conditionId String
+  condition   Condition     @relation(fields: [conditionId], references: [id], onDelete: Cascade)
+  images      ItemImage[]
+  likedBy     LikedItem[]
+  requests    ItemRequest[]
+
+  @@map("items")
+}
+
+model LikedItem {
+  id     String @id @default(cuid())
+  userId String
+  itemId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemId])
+  @@map("liked_items")
+}
+
+model ItemRequest {
+  id        String        @id @default(cuid())
+  status    RequestStatus @default(PENDING)
+  quantity  Int           @default(1)
+  message   String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  // Relations
+  requesterId String
+  providerId  String
+  itemId      String
+
+  requester User          @relation("SentRequests", fields: [requesterId], references: [id], onDelete: Cascade)
+  provider  User          @relation("ReceivedRequests", fields: [providerId], references: [id], onDelete: Cascade)
+  item      Item          @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  chats     ChatMessage[]
+
+  @@map("item_requests")
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  content   String
+  imageUrl  String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Relations
+  senderId      String
+  receiverId    String
+  itemRequestId String
+
+  sender      User        @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User        @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  itemRequest ItemRequest @relation(fields: [itemRequestId], references: [id], onDelete: Cascade) // ADD THIS
+
+  @@map("chat_messages")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
+}

@@ -21,6 +21,7 @@ export default class Item {
             avatar: true,
           },
         },
+        category: true,
       },
 
       where: {
